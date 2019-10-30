@@ -32,6 +32,23 @@ void error(char *fmt, ...) {
   exit(1);
 }
 
+// Input program
+char *user_input;
+
+// Print error to point out
+void error_at(char *loc, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+
+  int pos = loc - user_input;
+  fprintf(stderr, "%s\n", user_input);
+  fprintf(stderr, "%*s", pos, " ");
+  fprintf(stderr, "^ ");
+  vfprintf(stderr, fmt, ap);
+  fprintf(stderr, "\n");
+  exit(1);
+}
+
 // Go forward to the next token when current token is expected symbol
 // and return true, else return false.
 bool consume(char op) {
@@ -45,7 +62,7 @@ bool consume(char op) {
 // else output error.
 void expect(char op) {
   if (currentToken->kind != TK_RESERVED || currentToken->str[0] != op)
-    error("Not '%c'", op);
+    error_at(currentToken->str, "Not '%c'", op);
   currentToken = currentToken->next;
 }
 
@@ -53,7 +70,7 @@ void expect(char op) {
 // when current token is expected symbol, else output error.
 int expect_number() {
   if (currentToken->kind != TK_NUM)
-    error("Not integer");
+    error_at(currentToken->str, "Not integer");
   int val = currentToken->val;
   currentToken = currentToken->next;
   return val;
@@ -96,7 +113,7 @@ Token *tokenize(char *p) {
       continue;
     }
     
-    error("Cannot tokenize");
+    error_at(p, "Cannot tokenize");
   }
   
   new_token(TK_EOF, cur, p);
@@ -108,6 +125,9 @@ int main(int argc, char **argv) {
     fprintf(stderr, "Invalid number of arguments\n");
     return 1;
   }
+
+  // Get user input
+  user_input = argv[1];
 
   // Do tokenize
   currentToken = tokenize(argv[1]);
