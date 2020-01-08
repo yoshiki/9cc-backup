@@ -62,6 +62,14 @@ Node *new_node_num(int val) {
   return node;
 }
 
+// Create new node for ident
+Node *new_node_ident(int offset) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+  node->offset = offset;
+  return node;
+}
+
 // program    = stmt*
 // stmt       = expr ";"
 // expr       = assign
@@ -82,10 +90,8 @@ Node *primary() {
 
   Token *tok;
   if (tok = consume_ident()) {
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_LVAR;
-    node->offset = (tok->str[0] - 'a' + 1) * 8;
-    return node;
+    int offset = (tok->str[0] - 'a' + 1) * 8;
+    return new_node_ident(offset);
   }
 
   return new_node_num(expect_number());
