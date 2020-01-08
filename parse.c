@@ -1,5 +1,9 @@
 #include "9cc.h"
 
+bool at_eof() {
+  return currentToken->kind == TK_EOF;
+}
+
 // Go forward to the next token when current token is expected symbol
 // and return true, else return false.
 bool consume(char *op) {
@@ -9,6 +13,16 @@ bool consume(char *op) {
     return false;
   currentToken = currentToken->next;
   return true;
+}
+
+// Go forward to the next token and return current token
+// when current token is expected symbol.
+Token *consume_ident() {
+  if (currentToken->kind != TK_INDENT)
+    return NULL;
+  Token *t = currentToken;
+  currentToken = currentToken->next;
+  return t;
 }
 
 // Go forward to the next token when current token is expected symbol,
@@ -48,22 +62,33 @@ Node *new_node_num(int val) {
   return node;
 }
 
-// expr       = equality
+// program    = stmt*
+// stmt       = expr ";"
+// expr       = assign
+// assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
 // relational = add ("<" add | "<=" add | ">" add | ">=" add)*
 // add        = mul ("+" mul | "-" mul)*
 // mul        = unary ("*" unary | "/" unary)*
 // unary      = ("+" | "-")? primary
-// primary    = num | "(" expr ")"
+// primary    = num | ident | "(" expr ")"
 
 Node *primary() {
   if (consume("(")) {
     Node *node = expr();
     expect(")");
     return node;
-  } else {
-    return new_node_num(expect_number());
   }
+
+  Token *tok;
+  if (tok = consume_ident()) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    node->offset = (tok->str[0] - 'a' + 1) * 8;
+    return node;
+  }
+
+  return new_node_num(expect_number());
 }
 
 Node *unary() {
@@ -130,6 +155,28 @@ Node *equality() {
   }
 }
 
+Node *assign() {
+  Node *node = equality();
+  if (consume("="))
+    node = new_node(ND_ASSIGN, node, assign());
+  return node;
+}
+
 Node *expr() {
-  return equality();
+  return assign();
+}
+
+Node *stmt() {
+  Node *node = expr();
+  expect(";");
+  return node;
+}
+
+Node *code[100];
+
+void program() {
+  int i = 0;
+  while (!at_eof())
+    code[i++] = stmt();
+  code[i] = NULL;
 }

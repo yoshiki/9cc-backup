@@ -12,17 +12,19 @@ void error_at(char *loc, char *fmt, ...);
 
 // Kind of node for abstract syntax tree
 typedef enum {
-  ND_ADD,  // +
-  ND_SUB,  // -
-  ND_MUL,  // *
-  ND_DIV,  // /
-  ND_EQ,   // ==
-  ND_NE,   // !=
-  ND_LT,   // <
-  ND_LE,   // <=
-  //ND_GT,   // > is invert to ND_LT
-  //ND_GE,   // >= is invert to ND_LE
-  ND_NUM,  // Integer
+  ND_ADD,    // +
+  ND_SUB,    // -
+  ND_MUL,    // *
+  ND_DIV,    // /
+  ND_EQ,     // ==
+  ND_NE,     // !=
+  ND_LT,     // <
+  ND_LE,     // <=
+  //ND_GT,     // > is invert to ND_LT
+  //ND_GE,     // >= is invert to ND_LE
+  ND_ASSIGN, // a = 0
+  ND_LVAR,   // Local value
+  ND_NUM,    // Integer
 } NodeKind;
 
 typedef struct Node Node;
@@ -31,6 +33,7 @@ struct Node {
   Node *lhs;      // Left-hand side
   Node *rhs;      // Right-hand side
   int val;        // Use only the kind is ND_NUM
+  int offset;     // Use only the kind is ND_LVAR
 };
 
 Node *primary();
@@ -39,13 +42,17 @@ Node *mul();
 Node *add();
 Node *relational();
 Node *equality();
+Node *assign();
 Node *expr();
+Node *stmt();
+void program();
 
 void dump_node(Node *node, int depth);
 
 // Kind of token
 typedef enum {
   TK_RESERVED, // Symbols
+  TK_INDENT,   // Identifier
   TK_NUM,      // Integer
   TK_EOF,      // Token of the end of file
 } TokenKind;
