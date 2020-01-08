@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define DEBUG 1
+
 // Kind of token
 typedef enum {
   TK_RESERVED, // Symbols
@@ -273,6 +275,61 @@ Node *expr() {
   return equality();
 }
 
+void print_space(int num) {
+  if (num == 0) return;
+  int padding = 2;
+  for (int i = 0; i < (num - 1) * padding; i++) {
+    printf(" ");
+  }
+  for (int i = 0; i < padding; i++) {
+    if (i == 0)
+      printf("└");
+    else
+      printf("─");
+  }
+}
+
+void dump_node(Node *node, int depth) {
+  print_space(depth);
+
+  if (node->kind == ND_NUM) {
+    printf("%d\n", node->val);
+    return;
+  }
+
+  switch (node->kind) {
+    case ND_ADD:
+      printf("+");
+      break;
+    case ND_SUB:
+      printf("-");
+      break;
+    case ND_MUL:
+      printf("*");
+      break;
+    case ND_DIV:
+      printf("/");
+      break;
+    case ND_EQ:
+      printf("==");
+      break;
+    case ND_NE:
+      printf("!=");
+      break;
+    case ND_LT:
+      printf("<");
+      break;
+    case ND_LE:
+      printf("<=");
+      break;
+  }
+  printf("\n");
+
+  depth++;
+  dump_node(node->lhs, depth);
+  dump_node(node->rhs, depth);
+}
+
 void gen(Node *node) {
   if (node->kind == ND_NUM) {
     printf("  push %d\n", node->val);
@@ -336,6 +393,12 @@ int main(int argc, char **argv) {
 
   // Parse
   Node *node = expr();
+
+  // Dump node
+  if (DEBUG) {
+    dump_node(node, 0);
+    return 0;
+  }
 
   // Output header of assembly
   printf(".intel_syntax noprefix\n");
