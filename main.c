@@ -7,15 +7,17 @@ int main(int argc, char **argv) {
   // Get user input
   user_input = argv[1];
 
-  // Do tokenize
-  currentToken = tokenize(argv[1]);
+  // Tokenize
+  tokenize();
 
   // Parse
-  Node *node = expr();
+  program();
 
   // Dump node
   if (DEBUG) {
-    dump_node(node, 0);
+    for (int i = 0; code[i]; i++) {
+      dump_node(code[i], 0);
+    }
     return 0;
   }
 
@@ -24,11 +26,25 @@ int main(int argc, char **argv) {
   printf(".global main\n");
   printf("main:\n");
 
-  // Generate code while traversing AST to emit assembly
-  gen(node);
+  // Prologue
+  // Allocate space for 26 variables
+  printf("  push rbp\n");
+  printf("  mov rbp, rsp\n");
+  printf("  sub rsp, 208\n");
 
-  // Load to rax from top of stach(It's result) and return
-  printf("  pop rax\n");
+  // Generate code while traversing AST to emit assembly
+  for (int i = 0; code[i]; i++) {
+    gen(code[i]);
+
+    // Pop one value because remains on the stack
+    // as the result of evaluating the expression
+    printf("  pop rax\n");
+  }
+
+  // Epilogue
+  // The rax that is result of last evaluating become return value
+  printf("  mov rsp, rbp\n");
+  printf("  pop rbp\n");
   printf("  ret\n");
 
   return 0;
