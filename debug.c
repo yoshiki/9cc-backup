@@ -40,9 +40,18 @@ void print_space(int num) {
 void dump_node(Node *node, int depth) {
   print_space(depth);
 
-  if (node->kind == ND_NUM) {
-    printf("%d\n", node->val);
-    return;
+  switch (node->kind) {
+    case ND_NUM:
+      printf("%d\n", node->val);
+      return;
+    case ND_LVAR:
+      printf("=(%d) {\n", node->offset);
+      return;
+    case ND_ASSIGN:
+      dump_node(node->lhs, depth);
+      dump_node(node->rhs, ++depth);
+      printf("}\n");
+      return;
   }
 
   switch (node->kind) {

@@ -1,5 +1,5 @@
 #!/bin/bash
-try() {
+assert() {
   expected="$1"
   input="$2"
 
@@ -16,31 +16,34 @@ try() {
   fi
 }
 
-try 0 0
-try 42 42
-try 21 '5+20-4'
-try 41 ' 12 + 34 - 5 '
-try 30 '10 * (5 - 2)'
-try 4 '(3+5)/2'
-try 1 '(-3+5)/+2'
-try 10 '-10 +20'
-try 10 '- -10'
-try 10 '- - +10'
-try 1 '10 == 10'
-try 0 '10 == 9'
-try 1 '10 < 12'
-try 1 '-10 < 12'
-try 0 '10 < -12'
-try 0 '10 < 10'
-try 0 '10 < 9'
-try 1 '10 <= 12'
-try 1 '10 <= 10'
-try 0 '10 <= 9'
-try 1 '10 > 9'
-try 0 '10 > 10'
-try 0 '10 > 12'
-try 1 '10 >= 9'
-try 1 '10 >= 10'
-try 0 '10 >= 12'
+assert 0 '0;'
+assert 42 '42;'
+assert 21 '5+20-4;'
+assert 41 ' 12 + 34 - 5 ;'
+assert 30 '10 * (5 - 2);'
+assert 4 '(3+5)/2;'
+assert 1 '(-3+5)/+2;'
+assert 10 '-10 +20;'
+assert 10 '- -10;'
+assert 10 '- - +10;'
+assert 1 '10 == 10;'
+assert 0 '10 == 9;'
+assert 1 '10 < 12;'
+assert 1 '-10 < 12;'
+assert 0 '10 < -12;'
+assert 0 '10 < 10;'
+assert 0 '10 < 9;'
+assert 1 '10 <= 12;'
+assert 1 '10 <= 10;'
+assert 0 '10 <= 9;'
+assert 1 '10 > 9;'
+assert 0 '10 > 10;'
+assert 0 '10 > 12;'
+assert 1 '10 >= 9;'
+assert 1 '10 >= 10;'
+assert 0 '10 >= 12;'
+assert 1 'a = 1;a;'
+assert 3 'a=1; b=2; c=3;'
+assert 4 'a=3; b=a+2; a+b-4;'
 
 echo OK

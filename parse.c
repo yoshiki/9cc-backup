@@ -31,7 +31,7 @@ void expect(char *op) {
   if (currentToken->kind != TK_RESERVED ||
     strlen(op) != currentToken->len ||
     memcmp(currentToken->str, op, currentToken->len))
-    error_at(currentToken->str, "Not '%c'", op);
+    error_at(currentToken->str, "Not '%s'", op);
   currentToken = currentToken->next;
 }
 
@@ -177,8 +177,6 @@ Node *stmt() {
   expect(";");
   return node;
 }
-
-Node *code[100];
 
 void program() {
   int i = 0;

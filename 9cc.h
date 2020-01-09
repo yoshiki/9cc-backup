@@ -72,5 +72,8 @@ Token *currentToken;
 // Input program
 char *user_input;
 
+// Fragment of code
+Node *code[100];
+
 void gen(Node *node);
-Token *tokenize(char *p);
+void tokenize();

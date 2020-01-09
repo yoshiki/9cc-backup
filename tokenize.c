@@ -14,7 +14,8 @@ bool startswith(char *p, char *q) {
 }
 
 // Tokenize input string(*p) and return it
-Token *tokenize(char *p) {
+void tokenize() {
+  char *p = user_input;
   Token head;
   head.next = NULL;
   Token *cur = &head;
@@ -34,7 +35,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (strchr("+-*/()<>", *p)) {
+    if (strchr("+-*/()<>;=", *p)) {
       cur = new_token(TK_RESERVED, cur, p++);
       cur->len = 1;
       continue;
@@ -59,5 +60,5 @@ Token *tokenize(char *p) {
 
   new_token(TK_EOF, cur, p);
 
-  return head.next;
+  currentToken = head.next;
 }
