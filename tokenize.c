@@ -65,8 +65,11 @@ void tokenize() {
     }
 
     if (is_alpha(*p)) {
-      cur = new_token(TK_INDENT, cur, p++);
-      cur->len = 1;
+      char *q = p++;
+      while (is_alnum(*p))
+        p++;
+      cur = new_token(TK_INDENT, cur, q);
+      cur->len = p - q;
       continue;
     }
 

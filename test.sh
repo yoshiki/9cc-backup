@@ -49,5 +49,7 @@ assert 12 'a=3; b=a+2; c=a+b; a+b+c-4;'
 assert 10 'a=10; return a;'
 assert 3 'return 3;'
 assert 12 'a=3; b=a+2; c=a+b; return a+b+c-4;'
+assert 1 'foo=1; return foo;'
+assert 2 'foo=1; bar = 3; return bar - foo;'
 
 echo OK
