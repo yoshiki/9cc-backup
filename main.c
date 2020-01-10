@@ -13,6 +13,12 @@ int main(int argc, char **argv) {
   // Parse
   program();
 
+  // Count up stack size from locals
+  int stack_size = 0;
+  for (LVar *var = locals; var; var = var->next) {
+    stack_size += 8;
+  }
+
   // Dump node
   if (DEBUG) {
     for (int i = 0; code[i]; i++) {
@@ -30,7 +36,7 @@ int main(int argc, char **argv) {
   // Allocate space for 26 variables
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
+  printf("  sub rsp, %d\n", stack_size);
 
   // Generate code while traversing AST to emit assembly
   for (int i = 0; code[i]; i++) {
