@@ -45,5 +45,9 @@ assert 0 '10 >= 12;'
 assert 1 'a = 1;a;'
 assert 3 'a=1; b=2; c=3;'
 assert 4 'a=3; b=a+2; a+b-4;'
+assert 12 'a=3; b=a+2; c=a+b; a+b+c-4;'
+assert 10 'a=10; return a;'
+assert 3 'return 3;'
+assert 12 'a=3; b=a+2; c=a+b; return a+b+c-4;'
 
 echo OK

@@ -7,8 +7,20 @@
 
 #define DEBUG 0
 
+void warn(char *fmt, ...);
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
+
+typedef struct LVar LVar;
+struct LVar {
+  LVar *next;  // Next variable or NULL
+  char *name;  // Variable name
+  int len;     // Variable length
+  int offset;  // Variable offset from RBP
+};
+
+// Local variables
+LVar *locals;
 
 // Kind of node for abstract syntax tree
 typedef enum {
@@ -25,6 +37,7 @@ typedef enum {
   ND_ASSIGN, // a = 0
   ND_LVAR,   // Local value
   ND_NUM,    // Integer
+  ND_RETURN, // Return
 } NodeKind;
 
 typedef struct Node Node;

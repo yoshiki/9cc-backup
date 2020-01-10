@@ -1,5 +1,13 @@
 #include "9cc.h"
 
+// Print warn
+void warn(char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  vfprintf(stderr, fmt, ap);
+  fprintf(stderr, "\n");
+}
+
 // Print error to point out
 void error_at(char *loc, char *fmt, ...) {
   va_list ap;

@@ -63,15 +63,23 @@ Node *new_node_num(int val) {
 }
 
 // Create new node for ident
-Node *new_node_ident(int offset) {
+Node *new_node_ident() {
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_LVAR;
-  node->offset = offset;
   return node;
 }
 
+// Find variables with name.
+// Return NULL if not found.
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  return NULL;
+}
+
 // program    = stmt*
-// stmt       = expr ";"
+// stmt       = expr ";" | "return" expr ";"
 // expr       = assign
 // assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
@@ -88,10 +96,26 @@ Node *primary() {
     return node;
   }
 
-  Token *tok;
-  if (tok = consume_ident()) {
-    int offset = (tok->str[0] - 'a' + 1) * 8;
-    return new_node_ident(offset);
+  Token *tok = consume_ident();
+  if (tok) {
+    Node *node = new_node_ident();
+
+    LVar *lvar = find_lvar(tok);
+    if (lvar) {
+      // Set offset when lvar already exists.
+      node->offset = lvar->offset;
+    } else {
+      // Create new local variable when lvar does not exist.
+      lvar = calloc(1, sizeof(LVar));
+      lvar->next = locals;
+      lvar->name = tok->str;
+      lvar->len = tok->len;
+      lvar->offset = locals->offset + 8;
+
+      node->offset = lvar->offset;
+      locals = lvar;
+    }
+    return node;
   }
 
   return new_node_num(expect_number());
@@ -173,13 +197,24 @@ Node *expr() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node;
+
+  if (consume("return")) {
+    node = new_node(ND_RETURN, expr(), NULL);
+  } else {
+    node = expr();
+  }
   expect(";");
+
   return node;
 }
 
 void program() {
+  // Create first local variables
+  locals = calloc(1, sizeof(LVar));
+
   int i = 0;
+
   while (!at_eof())
     code[i++] = stmt();
   code[i] = NULL;
