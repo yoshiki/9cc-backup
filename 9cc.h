@@ -24,20 +24,21 @@ LVar *locals;
 
 // Kind of node for abstract syntax tree
 typedef enum {
-  ND_ADD,    // +
-  ND_SUB,    // -
-  ND_MUL,    // *
-  ND_DIV,    // /
-  ND_EQ,     // ==
-  ND_NE,     // !=
-  ND_LT,     // <
-  ND_LE,     // <=
-  //ND_GT,     // > is invert to ND_LT
-  //ND_GE,     // >= is invert to ND_LE
-  ND_ASSIGN, // a = 0
-  ND_LVAR,   // Local value
-  ND_NUM,    // Integer
-  ND_RETURN, // Return
+  ND_ADD,     // +
+  ND_SUB,     // -
+  ND_MUL,     // *
+  ND_DIV,     // /
+  ND_EQ,      // ==
+  ND_NE,      // !=
+  ND_LT,      // <
+  ND_LE,      // <=
+  //ND_GT,      // > is invert to ND_LT
+  //ND_GE,      // >= is invert to ND_LE
+  ND_ASSIGN,  // a = 0
+  ND_LVAR,    // Local value
+  ND_NUM,     // Integer
+  ND_RETURN,  // Return
+  ND_IF,      // If
 } NodeKind;
 
 typedef struct Node Node;
@@ -47,6 +48,9 @@ struct Node {
   Node *rhs;      // Right-hand side
   int val;        // Use only the kind is ND_NUM
   int offset;     // Use only the kind is ND_LVAR
+  Node *cond;     // If condition
+  Node *then;     // If statement
+  Node *els;      // Else statement
 };
 
 Node *primary();

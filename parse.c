@@ -79,7 +79,9 @@ LVar *find_lvar(Token *tok) {
 }
 
 // program    = stmt*
-// stmt       = expr ";" | "return" expr ";"
+// stmt       = expr ";"
+//              | "return" expr ";"
+//              | "if" "(" expr ")" stmt ("else" stmt)?
 // expr       = assign
 // assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
@@ -201,10 +203,19 @@ Node *stmt() {
 
   if (consume("return")) {
     node = new_node(ND_RETURN, expr(), NULL);
+    expect(";");
+  } else if (consume("if")) {
+    node = new_node(ND_IF, NULL, NULL);
+    expect("(");
+    node->cond = expr();
+    expect(")");
+    node->then = stmt();
+    if (consume("else"))
+      node->els = stmt();
   } else {
     node = expr();
+    expect(";");
   }
-  expect(";");
 
   return node;
 }

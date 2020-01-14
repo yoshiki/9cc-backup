@@ -53,12 +53,28 @@ void dump_node(Node *node, int depth) {
       printf("%d\n", node->val);
       return;
     case ND_LVAR:
-      printf("=(%d) {\n", node->offset);
+      printf("var=(%d bytes)\n", node->offset);
       return;
     case ND_ASSIGN:
       dump_node(node->lhs, depth);
       dump_node(node->rhs, ++depth);
+      return;
+    case ND_RETURN:
+      printf("return\n");
+      dump_node(node->lhs, ++depth);
+      return;
+    case ND_IF:
+      printf("if ");
+      dump_node(node->cond, depth);
+      printf("{\n");
+      depth++;
+      dump_node(node->then, depth);
       printf("}\n");
+      if (node->els) {
+        printf("else {\n");
+        dump_node(node->els, depth);
+        printf("}\n");
+      }
       return;
   }
 
