@@ -59,5 +59,8 @@ assert 5 'a = 1 * 2; if (a == 2) return 5; return 3;'
 assert 3 'a = 2 * 2; if (a == 2) return 5; return 3;'
 assert 1 'if (2 > 1) return 1; else return 2;'
 assert 2 'if (2 < 1) return 1; else return 2;'
+assert 5 'i = 0; while (i < 5) i = i + 1; return i;'
+assert 10 'i = 0; a = 2; while (i < 10) i = i + a; return i;'
+assert 10 'i = 100; while (i/2 > 5) i = i - 2; return i;'
 
 echo OK

@@ -78,6 +78,13 @@ void tokenize() {
       continue;
     }
 
+    if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_RESERVED, cur, p);
+      cur->len = 5;
+      p += 5;
+      continue;
+    }
+
     if (is_alpha(*p)) {
       char *q = p++;
       while (is_alnum(*p))
