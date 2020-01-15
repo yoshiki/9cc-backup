@@ -64,5 +64,6 @@ assert 10 'i = 0; a = 2; while (i < 10) i = i + a; return i;'
 assert 10 'i = 100; while (i/2 > 5) i = i - 2; return i;'
 assert 20 'i = 0; j = 0; for (i=0;i<10;i=i+1) j = j + 2; return j;'
 assert 3 'for (;;) return 3; return 5;'
+assert 1 '{ return 1; }'
 
 echo OK

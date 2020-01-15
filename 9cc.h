@@ -41,11 +41,13 @@ typedef enum {
   ND_IF,      // If
   ND_WHILE,   // While
   ND_FOR,     // For
+  ND_BLOCK,   // Block
 } NodeKind;
 
 typedef struct Node Node;
 struct Node {
   NodeKind kind;  // Type of node
+  Node *next;     // Next
   Node *lhs;      // Left-hand side
   Node *rhs;      // Right-hand side
   int val;        // Use only the kind is ND_NUM
@@ -55,6 +57,7 @@ struct Node {
   Node *els;      // Else statement
   Node *init;     // For's init statement
   Node *inc;      // For's increment statement
+  Node *body;     // Block statements
 };
 
 Node *primary();

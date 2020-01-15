@@ -84,6 +84,7 @@ LVar *find_lvar(Token *tok) {
 //              | "if" "(" expr ")" stmt ("else" stmt)?
 //              | "while" "(" expr ")" stmt
 //              | "for" "(" expr? ";" expr? ";" expr? ")" stmt
+//              | "{" stmt* "}"
 // expr       = assign
 // assign     = equality ("=" assign)?
 // equality   = relational ("==" relational | "!=" relational)*
@@ -236,6 +237,15 @@ Node *stmt() {
       expect(")");
     }
     node->then = stmt();
+  } else if (consume("{")) {
+      Node head = {};
+      Node *cur = &head;
+      while (!consume("}")) {
+        cur->next = stmt();
+        cur = cur->next;
+      }
+      node = new_node(ND_BLOCK, NULL, NULL);
+      node->body = head.next;
   } else {
     node = expr();
     expect(";");
