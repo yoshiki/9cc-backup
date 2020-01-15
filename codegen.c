@@ -60,12 +60,30 @@ void gen(Node *node) {
     }
     case ND_WHILE: {
       int seq = labelseq++;
-      printf(".L.begin.%d:", seq);
+      printf(".L.begin.%d:\n", seq);
       gen(node->cond);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
       printf("  je  .L.end.%d\n", seq);
       gen(node->then);
+      printf("  jmp .L.begin.%d\n", seq);
+      printf(".L.end.%d:\n", seq);
+      return;
+    }
+    case ND_FOR: {
+      int seq = labelseq++;
+      if (node->init)
+        gen(node->init);
+      printf(".L.begin.%d:\n", seq);
+      if (node->cond) {
+        gen(node->cond);
+        printf("  pop rax\n");
+        printf("  cmp rax, 0\n");
+        printf("  je  .L.end.%d\n", seq);
+      }
+      gen(node->then);
+      if (node->inc)
+        gen(node->inc);
       printf("  jmp .L.begin.%d\n", seq);
       printf(".L.end.%d:\n", seq);
       return;
