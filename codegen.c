@@ -3,10 +3,10 @@
 static int labelseq = 1;
 
 void gen_lval(Node *node) {
-  if (node->kind != ND_LVAR)
+  if (node->kind != ND_VAR)
     error("Invalid left variable");
   printf("  mov rax, rbp\n");
-  printf("  sub rax, %d\n", node->offset);
+  printf("  sub rax, %d\n", node->var->offset);
   printf("  push rax\n");
 }
 
@@ -15,7 +15,7 @@ void gen(Node *node) {
     case ND_NUM:
       printf("  push %d\n", node->val);
       return;
-    case ND_LVAR:
+    case ND_VAR:
       gen_lval(node);
       printf("  pop rax\n");
       printf("  mov rax, [rax]\n");
@@ -137,4 +137,32 @@ void gen(Node *node) {
   }
 
   printf("  push rax\n");
+}
+
+void codegen(Function *prog) {
+  // Output header of assembly
+  printf(".intel_syntax noprefix\n");
+  printf(".global main\n");
+  printf("main:\n");
+
+  // Prologue
+  // Allocate space for 26 variables
+  printf("  push rbp\n");
+  printf("  mov rbp, rsp\n");
+  printf("  sub rsp, %d\n", prog->stack_size);
+
+  // Generate code while traversing AST to emit assembly
+  for (Node *node = prog->node; node; node = node->next) {
+    gen(node);
+
+    // Pop one value because remains on the stack
+    // as the result of evaluating the expression
+    printf("  pop rax\n");
+  }
+
+  // Epilogue
+  // The rax that is result of last evaluating become return value
+  printf("  mov rsp, rbp\n");
+  printf("  pop rbp\n");
+  printf("  ret\n");
 }

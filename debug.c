@@ -45,17 +45,6 @@ void print_space(int num) {
   }
 }
 
-char *find_varname(Node *node) {
-  for (LVar *var = locals; var; var = var->next) {
-    if (var->offset == node->offset) {
-      char *varname = calloc(var->len, sizeof(char));
-      strncpy(varname, var->name, var->len);
-      return varname;
-    }
-  }
-  return NULL;
-}
-
 void dump_node(Node *node, int depth) {
   print_space(depth);
 
@@ -63,8 +52,8 @@ void dump_node(Node *node, int depth) {
     case ND_NUM:
       printf("%d\n", node->val);
       return;
-    case ND_LVAR:
-      printf("%s(%d bytes)\n", find_varname(node), node->offset);
+    case ND_VAR:
+      printf("%s(offset: %d)\n", node->var->name, node->var->offset);
       return;
     case ND_ASSIGN:
       printf("=\n");
