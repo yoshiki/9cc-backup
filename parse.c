@@ -104,7 +104,7 @@ Var *find_var(Token *tok) {
 
 Function *program() {
   // Create first local variables
-  locals = calloc(1, sizeof(Var));
+  locals = NULL;
 
   Node head = {};
   Node *cur = &head;

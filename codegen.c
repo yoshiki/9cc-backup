@@ -32,9 +32,7 @@ void gen(Node *node) {
     case ND_RETURN:
       gen(node->lhs);
       printf("  pop rax\n");
-      printf("  mov rsp, rbp\n");
-      printf("  pop rbp\n");
-      printf("  ret\n");
+      printf("  jmp .L.return\n");
       return;
     case ND_IF: {
       int seq = labelseq++;
@@ -146,22 +144,17 @@ void codegen(Function *prog) {
   printf("main:\n");
 
   // Prologue
-  // Allocate space for 26 variables
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
+  // Allocate space with statck size calcurated for local variables
   printf("  sub rsp, %d\n", prog->stack_size);
 
   // Generate code while traversing AST to emit assembly
-  for (Node *node = prog->node; node; node = node->next) {
+  for (Node *node = prog->node; node; node = node->next)
     gen(node);
 
-    // Pop one value because remains on the stack
-    // as the result of evaluating the expression
-    printf("  pop rax\n");
-  }
-
   // Epilogue
-  // The rax that is result of last evaluating become return value
+  printf(".L.return:\n");
   printf("  mov rsp, rbp\n");
   printf("  pop rbp\n");
   printf("  ret\n");
