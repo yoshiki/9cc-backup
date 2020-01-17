@@ -86,6 +86,20 @@ Var *find_var(Token *tok) {
   return NULL;
 }
 
+// Get function args
+Node *func_args() {
+  if (consume(")")) return NULL;
+
+  Node *head = assign();
+  Node *cur = head;
+  while (consume(",")) {
+    cur->next = assign();
+    cur = cur->next;
+  }
+  expect(")");
+  return head;
+}
+
 // program    = stmt*
 // stmt       = expr ";"
 //              | "return" expr ";"
@@ -100,7 +114,9 @@ Var *find_var(Token *tok) {
 // add        = mul ("+" mul | "-" mul)*
 // mul        = unary ("*" unary | "/" unary)*
 // unary      = ("+" | "-")? primary
-// primary    = num | ident | "(" expr ")"
+// primary    = num
+//              | ident ("(" (assign ("," assign)*)? ")")?
+//              | "(" expr ")"
 
 Function *program() {
   // Create first local variables
@@ -252,6 +268,13 @@ Node *primary() {
 
   Token *tok = consume_ident();
   if (tok) {
+    if (consume("(")) {
+      Node *node = new_node(ND_FUNCALL, NULL, NULL);
+      node->funcname = strndup(tok->str, tok->len);
+      node->args = func_args();
+      return node;
+    }
+
     Var *var = find_var(tok);
     if (!var) {
       var = new_var(strndup(tok->str, tok->len));

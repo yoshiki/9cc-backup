@@ -39,6 +39,7 @@ typedef enum {
   ND_WHILE,   // While
   ND_FOR,     // For
   ND_BLOCK,   // Block
+  ND_FUNCALL, // Call function
 } NodeKind;
 
 typedef struct Node Node;
@@ -55,6 +56,8 @@ struct Node {
   Node *init;     // For's init statement
   Node *inc;      // For's increment statement
   Node *body;     // Block statements
+  char *funcname; // Name of function
+  Node *args;     // Arguments of function
 };
 
 typedef struct Function Function;
